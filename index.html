@@ -29,12 +29,18 @@
       left: 0;
       right: 0;
       bottom: 0;
-      backdrop-filter: blur(50px);
-      -webkit-backdrop-filter: blur(50px);
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+	  transition: backdrop-filter 1s ease-in-out, -webkit-backdrop-filter 1s ease-in-out;
+    }
+
+	.blurred {
+      backdrop-filter: blur(30px); 
+      -webkit-backdrop-filter: blur(30px);
     }
 
     .search-box {
@@ -166,7 +172,7 @@
   <div class="overlay">
     <form class="search-box" id="searchForm" autocomplete="off">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
-      <input type="text" id="searchInput" placeholder="..." autocomplete="off" />
+      <input type="text" id="searchInput" placeholder="" autocomplete="off" />
       <button type="button" class="icon-button" id="engineToggle">
         <div class="icon-wrapper" id="engineWrapper"></div>
       </button>
@@ -190,6 +196,7 @@
     const engineWrapper = document.getElementById('engineWrapper')
     const searchForm = document.getElementById('searchForm')
     const searchInput = document.getElementById('searchInput')
+	const overlay = document.querySelector('.overlay');
 
     let currentEngine = 'google'
 
@@ -235,6 +242,14 @@
     })
 
     window.addEventListener('DOMContentLoaded', insertInitialIcon)
+	
+	window.addEventListener('DOMContentLoaded', () => {
+      insertInitialIcon();
+      // Adiciona a classe 'blurred' ao overlay após um pequeno delay
+      setTimeout(() => {
+        overlay.classList.add('blurred');
+      }, 100); // Inicia o blur após 100ms
+    });
   </script>
 </body>
 </html>
