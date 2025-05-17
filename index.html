@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova guia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+    }
+
+    body {
+      background: url('https://c.feridinha.com/vwuK2.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-box {
+      background: rgba(255, 255, 255, 0.2);
+	  color: white;
+      border-radius: 30px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      width: 500px;
+      max-width: 90%;
+      backdrop-filter: blur(10px);
+    }
+
+    .search-box svg {
+      color: white;
+      width: 24px;
+      height: 24px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 18px;
+      flex: 1;
+      margin: 0 10px;
+    }
+
+    .search-box input::-webkit-search-decoration,
+    .search-box input::-webkit-search-cancel-button,
+    .search-box input::-webkit-search-results-button,
+    .search-box input::-webkit-search-results-decoration {
+      display: none;
+    }
+
+    .search-box input:-webkit-autofill,
+    .search-box input:-webkit-autofill:hover,
+    .search-box input:-webkit-autofill:focus,
+    .search-box input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+      box-shadow: 0 0 0 1000px transparent inset !important;
+      -webkit-text-fill-color: white !important;
+    }
+
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      width: 24px;
+      height: 24px;
+    }
+
+    .icon-wrapper {
+      position: relative;
+      width: 24px;
+      height: 24px;
+    }
+
+    .icon-wrapper svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+      transform: rotate(-180deg);
+    }
+
+    .icon-wrapper svg.show {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+
+    .icon-wrapper svg.exit {
+      opacity: 0;
+      transform: rotate(180deg);
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: rotate(-180deg);
+      }
+      100% {
+        opacity: 1;
+        transform: rotate(0deg);
+      }
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+      gap: 15px;
+    }
+
+    .quick-links a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    .quick-links a:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .quick-links i {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <form class="search-box" id="searchForm" autocomplete="off">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="..." autocomplete="off" />
+      <button type="button" class="icon-button" id="engineToggle">
+        <div class="icon-wrapper" id="engineWrapper"></div>
+      </button>
+    </form>
+
+    <div class="quick-links">
+      <a href="https://www.youtube.com" ><i class="fab fa-youtube"></i>Youtube</a>
+      <a href="https://www.twitch.tv" ><i class="fab fa-twitch"></i>Twitch</a>
+      <a href="https://discord.com/channels/@me" ><i class="fab fa-discord"></i>Discord</a>
+      <a href="https://twitter.com" ><i class="fab fa-twitter"></i>Twitter</a>
+      <a href="https://outlook.live.com/mail/0/" ><i class="fas fa-envelope"></i>Outlook</a>
+	  <a href="https://mail.google.com/mail/u/0/#inbox" ><i class="fas fa-envelope"></i>Gmail</a>
+      <a href="https://chat.openai.com" ><i class="fas fa-comments"></i>ChatGPT</a>
+      <a href="https://crowdin.com/editor/minecraft/10038/enus-ptbr?view=comfortable&filter=basic&value=0" ><i class="fas fa-globe"></i>Crowdin</a>
+      <a href="https://www.roblox.com" ><i class="fas fa-gamepad"></i>Roblox</a>
+    </div>
+  </div>
+
+  <script>
+    const engineToggle = document.getElementById('engineToggle')
+    const engineWrapper = document.getElementById('engineWrapper')
+    const searchForm = document.getElementById('searchForm')
+    const searchInput = document.getElementById('searchInput')
+
+    let currentEngine = 'google'
+
+    const icons = {
+      google: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+      youtube: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-2C18.88 4 12 4 12 4s-6.88 0-8.59.42a2.78 2.78 0 0 0-1.95 2 29.94 29.94 0 0 0 0 11.16 2.78 2.78 0 0 0 1.95 2C5.12 20 12 20 12 20s6.88 0 8.59-.42a2.78 2.78 0 0 0 1.95-2 29.94 29.94 0 0 0 0-11.16z"/><polygon points="10 15 15 12 10 9 10 15"/></svg>`
+    }
+
+    function insertInitialIcon() {
+      engineWrapper.innerHTML = icons[currentEngine]
+      const icon = engineWrapper.querySelector('svg')
+      icon.classList.add('fade-in')
+      requestAnimationFrame(() => {
+        icon.classList.add('show')
+      })
+    }
+
+    engineToggle.addEventListener('click', () => {
+      const currentIcon = engineWrapper.querySelector('svg')
+      currentIcon.classList.remove('show')
+      currentIcon.classList.add('exit')
+
+      setTimeout(() => {
+        engineWrapper.removeChild(currentIcon)
+        currentEngine = currentEngine === 'google' ? 'youtube' : 'google'
+        engineWrapper.insertAdjacentHTML('beforeend', icons[currentEngine])
+        const newIcon = engineWrapper.querySelector('svg:last-child')
+        newIcon.classList.add('fade-in')
+        requestAnimationFrame(() => {
+          newIcon.classList.add('show')
+        })
+      }, 300)
+    })
+
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const query = encodeURIComponent(searchInput.value.trim())
+      if (!query) return
+      const url = currentEngine === 'google'
+        ? `https://www.google.com/search?q=${query}`
+        : `https://www.youtube.com/results?search_query=${query}`
+      window.location.href = url
+    })
+
+    window.addEventListener('DOMContentLoaded', insertInitialIcon)
+  </script>
+</body>
+</html>
