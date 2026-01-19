@@ -40,54 +40,67 @@
       right: 40px;
       text-align: center;
       color: white;
-      padding: 15px 30px;
+      padding: 20px; /* Padding ajustado */
       border-radius: 20px;
       animation: fadeIn 1s ease;
-      min-width: 220px;
+      
+      /* ALTERAÇÃO 1: Largura fixa para não variar tamanho */
+      width: 320px; 
+      
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     #clock-time {
-      font-size: 4rem;
+      font-size: 3.8rem; /* Leve ajuste para garantir que HH:MM:SS caiba bem */
       font-weight: 600;
       line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease;
+      
+      /* ALTERAÇÃO 2: Tabular Nums impede que o texto "sambe" */
+      font-variant-numeric: tabular-nums; 
+      
+      /* Garante que o texto não quebre linha */
+      white-space: nowrap; 
+    }
+
+    #clock-time:hover {
+      transform: scale(1.02);
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
     }
 
     #clock-date {
       font-size: 1rem;
       font-weight: 300;
       opacity: 0.8;
-      margin-top: 5px;
-      margin-bottom: 10px;
+      margin-top: 8px;
+      margin-bottom: 15px;
     }
 
     /* Estilo do Widget de Temperatura */
     .weather-widget {
       display: flex;
       align-items: center;
+      justify-content: center; /* Centraliza conteudo interno */
       gap: 10px;
       cursor: pointer;
-      padding: 8px 15px;
+      padding: 8px 20px;
       border-radius: 10px;
       transition: all 0.3s ease;
       background: rgba(255,255,255,0.05);
+      width: 100%; /* Ocupa a largura disponivel do container */
     }
 
     .weather-widget:hover {
       background: rgba(255,255,255,0.15);
-      transform: scale(1.05);
+      transform: scale(1.02); /* Scale menor para não estourar a caixa fixa */
     }
 
-    .weather-widget i {
-      font-size: 1.2rem;
-    }
-
-    .weather-widget span {
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
+    .weather-widget i { font-size: 1.2rem; }
+    .weather-widget span { font-size: 1.1rem; font-weight: 500; }
 
     /* --- MODAL DE PREVISÃO DO TEMPO --- */
     .modal-overlay {
@@ -141,21 +154,21 @@
     }
     
     .close-modal:hover { opacity: 1; }
-
-    .modal-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 25px;
-      text-align: center;
-    }
+    .modal-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 25px; text-align: center; }
 
     .forecast-container {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       overflow-x: auto;
-      padding-bottom: 5px;
+      padding-bottom: 10px;
     }
+
+    /* SCROLL CUSTOMIZADO */
+    .forecast-container::-webkit-scrollbar { height: 8px; }
+    .forecast-container::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
+    .forecast-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; transition: background 0.3s; }
+    .forecast-container::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
     .forecast-day {
       display: flex;
@@ -165,7 +178,7 @@
       background: rgba(255,255,255,0.05);
       padding: 15px 10px;
       border-radius: 12px;
-      min-width: 70px;
+      min-width: 80px;
       flex: 1;
     }
 
@@ -265,7 +278,6 @@
     .search-box input::-webkit-search-results-button,
     .search-box input::-webkit-search-results-decoration { display: none; }
     
-    /* Toggle Button */
     .icon-button {
       background: rgba(255, 255, 255, 0.1);
       border: none;
@@ -306,7 +318,7 @@
 
   <!-- Relógio + Clima -->
   <div class="clock-container glass-effect">
-    <div id="clock-time">00:00</div>
+    <div id="clock-time" title="Clique para mostrar/ocultar segundos">00:00</div>
     <div id="clock-date">Carregando data...</div>
     
     <!-- Widget de Clima -->
@@ -352,16 +364,32 @@
   </div>
 
   <script>
-    /* --- RELÓGIO --- */
+    /* --- RELÓGIO COM SEGUNDOS (PERSISTENTE) --- */
+    const clockTimeElement = document.getElementById('clock-time');
+    let showSeconds = localStorage.getItem('showSeconds') === 'true';
+
+    clockTimeElement.addEventListener('click', () => {
+      showSeconds = !showSeconds;
+      localStorage.setItem('showSeconds', showSeconds);
+      updateClock();
+    });
+
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       
+      let timeString = `${hours}:${minutes}`;
+
+      if (showSeconds) {
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        timeString += `:${seconds}`;
+      }
+
       const options = { weekday: 'long', day: 'numeric', month: 'long' };
       const dateString = now.toLocaleDateString('pt-BR', options);
 
-      document.getElementById('clock-time').textContent = `${hours}:${minutes}`;
+      clockTimeElement.textContent = timeString;
       document.getElementById('clock-date').textContent = dateString.charAt(0).toUpperCase() + dateString.slice(1);
     }
     setInterval(updateClock, 1000);
@@ -375,17 +403,15 @@
     const closeModalBtn = document.getElementById('closeModalBtn');
     const forecastContainer = document.getElementById('forecastContainer');
 
-    // Mapeamento de Códigos WMO para ícones FontAwesome
     function getWeatherIcon(code) {
-      // Códigos baseados na documentação Open-Meteo
-      if (code === 0) return 'fa-sun'; // Céu limpo
-      if (code >= 1 && code <= 3) return 'fa-cloud-sun'; // Parcialmente nublado
-      if (code === 45 || code === 48) return 'fa-smog'; // Neblina
-      if (code >= 51 && code <= 67) return 'fa-cloud-rain'; // Chuva fraca/moderada
-      if (code >= 80 && code <= 82) return 'fa-cloud-showers-heavy'; // Chuva forte
-      if (code >= 95 && code <= 99) return 'fa-bolt'; // Tempestade
-      if (code >= 71 && code <= 77) return 'fa-snowflake'; // Neve
-      return 'fa-cloud'; // Padrão
+      if (code === 0) return 'fa-sun';
+      if (code >= 1 && code <= 3) return 'fa-cloud-sun';
+      if (code === 45 || code === 48) return 'fa-smog';
+      if (code >= 51 && code <= 67) return 'fa-cloud-rain';
+      if (code >= 80 && code <= 82) return 'fa-cloud-showers-heavy';
+      if (code >= 95 && code <= 99) return 'fa-bolt';
+      if (code >= 71 && code <= 77) return 'fa-snowflake';
+      return 'fa-cloud';
     }
 
     async function fetchWeather(lat, lon) {
@@ -394,16 +420,13 @@
         const response = await fetch(url);
         const data = await response.json();
 
-        // Atualizar Widget Atual
         const currentCode = data.current.weather_code;
         const temp = Math.round(data.current.temperature_2m);
         
         currentWeatherIcon.className = `fas ${getWeatherIcon(currentCode)}`;
-        // Remove animação de loading se existir
         currentWeatherIcon.classList.remove('fa-spin', 'fa-spinner');
         currentTemp.textContent = `${temp}°C`;
 
-        // Preparar Modal (Previsão)
         renderForecast(data.daily);
 
       } catch (error) {
@@ -415,10 +438,8 @@
     function renderForecast(dailyData) {
       forecastContainer.innerHTML = '';
       
-      // Open-Meteo retorna arrays paralelos
       for (let i = 0; i < 7; i++) {
         const date = new Date(dailyData.time[i]);
-        // Ajuste para timezone local, pois a string vem YYYY-MM-DD
         const dateCorrected = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
         
         const dayName = i === 0 ? 'Hoje' : dateCorrected.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.','');
@@ -439,7 +460,6 @@
     }
 
     function getLocation() {
-      // Verifica se já tem salvo
       const savedLat = localStorage.getItem('user_lat');
       const savedLon = localStorage.getItem('user_lon');
 
@@ -450,11 +470,8 @@
           navigator.geolocation.getCurrentPosition((position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            
-            // Salva para o futuro
             localStorage.setItem('user_lat', lat);
             localStorage.setItem('user_lon', lon);
-            
             fetchWeather(lat, lon);
           }, (error) => {
             console.error("Erro geolocalização:", error);
@@ -466,27 +483,15 @@
       }
     }
 
-    // Inicializa Clima
     getLocation();
 
-    // Eventos do Modal
-    weatherWidget.addEventListener('click', () => {
-      modalOverlay.classList.add('active');
-    });
-
-    closeModalBtn.addEventListener('click', () => {
-      modalOverlay.classList.remove('active');
-    });
-
-    // Fechar ao clicar fora (no overlay escuro)
+    weatherWidget.addEventListener('click', () => { modalOverlay.classList.add('active'); });
+    closeModalBtn.addEventListener('click', () => { modalOverlay.classList.remove('active'); });
     modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) {
-        modalOverlay.classList.remove('active');
-      }
+      if (e.target === modalOverlay) modalOverlay.classList.remove('active');
     });
 
-
-    /* --- BUSCA E INTERFACE (Original) --- */
+    /* --- BUSCA --- */
     const engineToggle = document.getElementById('engineToggle')
     const engineWrapper = document.getElementById('engineWrapper')
     const searchForm = document.getElementById('searchForm')
@@ -503,9 +508,7 @@
       engineWrapper.innerHTML = icons[currentEngine]
       const icon = engineWrapper.querySelector('svg')
       icon.classList.add('fade-in')
-      requestAnimationFrame(() => {
-        icon.classList.add('show')
-      })
+      requestAnimationFrame(() => { icon.classList.add('show') })
     }
 
     engineToggle.addEventListener('click', () => {
@@ -519,9 +522,7 @@
         engineWrapper.insertAdjacentHTML('beforeend', icons[currentEngine])
         const newIcon = engineWrapper.querySelector('svg:last-child')
         newIcon.classList.add('fade-in')
-        requestAnimationFrame(() => {
-          newIcon.classList.add('show')
-        })
+        requestAnimationFrame(() => { newIcon.classList.add('show') })
         searchInput.placeholder = currentEngine === 'google' ? 'Pesquisar no Google...' : 'Pesquisar no YouTube...';
       }, 300)
     })
