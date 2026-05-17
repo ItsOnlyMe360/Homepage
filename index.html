@@ -26,24 +26,32 @@
 
     /* --- ESTILO GERAL (Glass Effect) --- */
     .glass-effect {
-      background: rgba(20, 20, 20, 0.6);
+      background: rgba(20, 20, 20, 0.4);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     }
 
-    /* --- RELÓGIO & CLIMA (Superior Direito) --- */
-    .clock-container {
+    /* --- PAINEL DIREITO (Agrupa Relógio e Widget Hoje) --- */
+    .right-panel {
       position: fixed;
       top: 30px;
       right: 40px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    /* --- RELÓGIO & CLIMA --- */
+    .clock-container {
       text-align: center;
       color: white;
       padding: 20px;
       border-radius: 20px;
       animation: fadeIn 1s ease;
-      width: 320px; 
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -94,6 +102,58 @@
     .weather-widget i { font-size: 1.2rem; }
     .weather-widget span { font-size: 1.1rem; font-weight: 500; }
 
+    /* --- WIDGET EVENTOS DE HOJE --- */
+    .today-container {
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      animation: fadeIn 1s ease 0.2s backwards;
+      display: flex;
+      flex-direction: column;
+      max-height: 400px;
+    }
+
+    .today-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .today-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .today-list::-webkit-scrollbar { width: 6px; }
+    .today-list::-webkit-scrollbar-track { background: transparent; }
+    .today-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+    .today-list::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+
+    .today-list li {
+      font-size: 0.85rem;
+      font-weight: 400;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 12px;
+      border-radius: 10px;
+      line-height: 1.3;
+      transition: background 0.3s;
+    }
+
+    .today-list li:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
     /* --- MODAL DE PREVISÃO DO TEMPO --- */
     .modal-overlay {
       position: fixed;
@@ -118,9 +178,8 @@
     }
 
     .weather-modal {
-      width: 650px; /* Aumentei um pouco a largura para o mapa caber melhor */
+      width: 650px;
       max-width: 90%;
-      /* Adicionado max-height e overflow para permitir rolagem caso o mapa seja muito alto */
       max-height: 90vh; 
       overflow-y: auto;
       padding: 30px;
@@ -131,14 +190,11 @@
       transition: transform 0.3s ease;
     }
     
-    /* Scrollbar customizada para o modal vertical */
     .weather-modal::-webkit-scrollbar { width: 8px; }
     .weather-modal::-webkit-scrollbar-track { background: transparent; }
     .weather-modal::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
-    .modal-overlay.active .weather-modal {
-      transform: translateY(0);
-    }
+    .modal-overlay.active .weather-modal { transform: translateY(0); }
 
     .close-modal {
       position: absolute;
@@ -163,7 +219,7 @@
       gap: 10px;
       overflow-x: auto;
       padding-bottom: 10px;
-      margin-bottom: 20px; /* Espaço para o mapa */
+      margin-bottom: 20px;
     }
 
     .forecast-container::-webkit-scrollbar { height: 8px; }
@@ -188,9 +244,9 @@
     .f-max { color: #ffcccb; font-weight: 600; font-size: 0.9rem; }
     .f-min { color: #add8e6; font-size: 0.85rem; opacity: 0.8; }
 
-
     /* --- BARRA LATERAL (Botões) --- */
     .sidebar {
+	  animation: fadeIn 1s ease;
       position: fixed;
       left: 40px;
       top: 50%;
@@ -218,9 +274,9 @@
     }
 
     .quick-links a:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.1) translateX(10px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      background: rgba(50, 50, 50, 0.2);
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     .quick-links i {
@@ -317,15 +373,28 @@
 </head>
 <body>
 
-  <!-- Relógio + Clima -->
-  <div class="clock-container glass-effect">
-    <div id="clock-time" title="Clique para mostrar/ocultar segundos">00:00</div>
-    <div id="clock-date">Carregando data...</div>
-    
-    <!-- Widget de Clima -->
-    <div class="weather-widget" id="weatherWidget" title="Ver previsão para 7 dias">
-      <i class="fas fa-spinner fa-spin" id="currentWeatherIcon"></i>
-      <span id="currentTemp">--°C</span>
+  <!-- Painel da Direita (Relógio + Eventos Hoje) -->
+  <div class="right-panel">
+    <!-- Relógio + Clima -->
+    <div class="clock-container glass-effect">
+      <div id="clock-time" title="Clique para mostrar/ocultar segundos">00:00</div>
+      <div id="clock-date">Carregando data...</div>
+      
+      <!-- Widget de Clima -->
+      <div class="weather-widget" id="weatherWidget" title="Ver previsão para 7 dias">
+        <i class="fas fa-spinner fa-spin" id="currentWeatherIcon"></i>
+        <span id="currentTemp">--°C</span>
+      </div>
+    </div>
+
+    <!-- Widget Hoje (Eventos) -->
+    <div class="today-container glass-effect">
+      <div class="today-title">
+        <i class="fas fa-calendar-day"></i> Hoje
+      </div>
+      <ul class="today-list" id="todayEventsList">
+        <li style="text-align: center; opacity: 0.7;"><i class="fas fa-spinner fa-spin"></i> Buscando eventos...</li>
+      </ul>
     </div>
   </div>
 
@@ -342,7 +411,6 @@
       <a href="https://mail.google.com/mail/u/0/#inbox"><i class="fas fa-envelope"></i>Gmail</a>
       <a href="https://gemini.google.com/app?hl=pt-BR"><i class="fas fa-comments"></i>Gemini</a>
       <a href="https://crowdin.com/project/hytale-game/pt-BR"><i class="fas fa-globe"></i>Crowdin</a>
-      
   </div>
 
   <!-- Barra de Pesquisa -->
@@ -369,7 +437,6 @@
       <div style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         <iframe src="https://www.rainviewer.com/map.html?loc=-22.7388,-43.4921,8.788702495454777&oCS=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1&ts=2" width="100%" frameborder="0" style="border:0;height:50vh;" allowfullscreen></iframe>
       </div>
-
     </div>
   </div>
 
@@ -501,6 +568,35 @@
       if (e.target === modalOverlay) modalOverlay.classList.remove('active');
     });
 
+    /* --- EVENTOS DE HOJE --- */
+    async function fetchTodayEvents() {
+      const listElement = document.getElementById('todayEventsList');
+      try {
+        const response = await fetch('https://gist.githubusercontent.com/ItsOnlyMe360/eb718d6742d510e4ac05b47645642e1e/raw/eventos_de_hoje.json');
+        if (!response.ok) throw new Error('Falha na requisição');
+        
+        const events = await response.json();
+        listElement.innerHTML = ''; 
+
+        if (events.length === 0) {
+          listElement.innerHTML = '<li style="text-align: center; opacity: 0.7;">Nenhum evento comemorativo hoje.</li>';
+          return;
+        }
+
+        events.forEach(eventText => {
+          const li = document.createElement('li');
+          li.textContent = eventText;
+          listElement.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error("Erro ao buscar eventos de hoje:", error);
+        listElement.innerHTML = '<li style="text-align: center; opacity: 0.7;">Erro ao carregar eventos.</li>';
+      }
+    }
+
+    fetchTodayEvents();
+
     /* --- BUSCA --- */
     const engineToggle = document.getElementById('engineToggle')
     const engineWrapper = document.getElementById('engineWrapper')
@@ -541,10 +637,12 @@
       e.preventDefault()
       const query = encodeURIComponent(searchInput.value.trim())
       if (!query) return
+      
       const url = currentEngine === 'google'
         ? `https://www.google.com/search?q=${query}`
-        : `https://www.youtube.com/results?search_query=${query}`
-      window.location.href = url
+        : `https://www.youtube.com/results?search_query=${query}`;
+        
+      window.location.href = url;
     })
 
     window.addEventListener('DOMContentLoaded', insertInitialIcon)
