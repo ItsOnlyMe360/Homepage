@@ -572,7 +572,7 @@
     async function fetchTodayEvents() {
       const listElement = document.getElementById('todayEventsList');
       try {
-        const response = await fetch('https://gist.githubusercontent.com/ItsOnlyMe360/eb718d6742d510e4ac05b47645642e1e/raw/eventos_de_hoje.json');
+        const response = await fetch('https://gist.githubusercontent.com/ItsOnlyMe360/eb718d6742d510e4ac05b47645642e1e/raw/');
         if (!response.ok) throw new Error('Falha na requisição');
         
         const events = await response.json();
