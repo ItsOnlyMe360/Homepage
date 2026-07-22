@@ -24,7 +24,6 @@
       background-size: cover;
     }
 
-    /* --- ESTILO GERAL (Glass Effect) --- */
     .glass-effect {
       background: rgba(20, 20, 20, 0.4);
       backdrop-filter: blur(15px);
@@ -33,7 +32,6 @@
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     }
 
-    /* --- PAINEL DIREITO (Agrupa Relógio e Widget Hoje) --- */
     .right-panel {
       position: fixed;
       top: 30px;
@@ -45,7 +43,6 @@
       z-index: 10;
     }
 
-    /* --- RELÓGIO & CLIMA --- */
     .clock-container {
       text-align: center;
       color: white;
@@ -55,6 +52,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      flex-shrink: 0;
     }
 
     #clock-time {
@@ -102,7 +100,6 @@
     .weather-widget i { font-size: 1.2rem; }
     .weather-widget span { font-size: 1.1rem; font-weight: 500; }
 
-    /* --- WIDGET EVENTOS DE HOJE --- */
     .today-container {
       color: white;
       padding: 20px;
@@ -110,7 +107,10 @@
       animation: fadeIn 1s ease 0.2s backwards;
       display: flex;
       flex-direction: column;
-      overflow: visible;
+      height: 350px;
+      max-height: 350px;
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
     .today-title {
@@ -125,6 +125,7 @@
       justify-content: space-between;
       gap: 10px;
       user-select: none;
+      flex-shrink: 0;
     }
 
     .today-title-content {
@@ -165,7 +166,8 @@
       flex-direction: column;
       gap: 8px;
       overflow-y: auto;
-      max-height: 250px;
+      height: 240px;
+      max-height: 240px;
       padding-right: 5px;
     }
 
@@ -182,6 +184,7 @@
       line-height: 1.3;
       transition: background 0.3s;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .today-list li:hover {
@@ -199,7 +202,6 @@
       text-decoration: underline;
     }
 
-    /* --- MODAL DE PREVISÃO DO TEMPO --- */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -289,7 +291,6 @@
     .f-max { color: #ffcccb; font-weight: 600; font-size: 0.9rem; }
     .f-min { color: #add8e6; font-size: 0.85rem; opacity: 0.8; }
 
-    /* --- BARRA LATERAL (Botões) --- */
     .sidebar {
       animation: fadeIn 1s ease;
       position: fixed;
@@ -298,10 +299,20 @@
       transform: translateY(-50%);
       display: flex;
       flex-direction: column;
-      gap: 15px;
       padding: 25px;
       border-radius: 20px;
       z-index: 10;
+      overflow: visible;
+    }
+
+    .sidebar-toggle-handle {
+      display: none;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .quick-links a {
@@ -330,7 +341,26 @@
       text-align: center;
     }
 
-    /* --- BARRA DE PESQUISA --- */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
     .search-container {
       position: fixed;
       bottom: 50px;
@@ -414,25 +444,123 @@
       0% { opacity: 0; }
       100% { opacity: 1; }
     }
+
+    @media (max-width: 768px) {
+      body, html {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100%;
+      }
+
+      .right-panel {
+        position: static;
+        transform: none;
+        width: 90%;
+        max-width: 360px;
+        margin: 30px auto 120px auto; 
+        gap: 15px;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: -260px; 
+        width: 260px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        padding: 25px 20px;
+        z-index: 1001; 
+        overflow: visible;
+      }
+
+      .sidebar.active {
+        left: 15px; 
+      }
+
+      .sidebar .quick-links {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding-right: 5px;
+      }
+
+      .sidebar .quick-links::-webkit-scrollbar { width: 4px; }
+      .sidebar .quick-links::-webkit-scrollbar-track { background: transparent; }
+      .sidebar .quick-links::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+
+      .sidebar-toggle-handle {
+        display: flex;
+        position: absolute;
+        top: 50%;
+        right: -35px; 
+        transform: translateY(-50%);
+        width: 35px;
+        height: 60px;
+        background: rgba(20, 20, 20, 0.6);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: none;
+        border-radius: 0 12px 12px 0;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        transition: right 0.4s ease, border-radius 0.4s ease;
+      }
+
+      .sidebar.active .sidebar-toggle-handle {
+        right: 0px;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+      }
+
+      .sidebar.active .sidebar-toggle-handle i {
+        transform: rotate(180deg);
+      }
+
+      .search-container {
+        position: fixed;
+        bottom: 20px;
+        width: 100%;
+        padding: 0 15px;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .weather-modal {
+        padding: 20px;
+        width: 95%;
+      }
+
+      .forecast-container {
+        gap: 8px;
+      }
+
+      .forecast-day {
+        min-width: 70px;
+        padding: 10px 5px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Painel da Direita (Relógio + Eventos Hoje) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="right-panel">
-    <!-- Relógio + Clima -->
     <div class="clock-container glass-effect">
       <div id="clock-time" title="Clique para mostrar/ocultar segundos">00:00</div>
       <div id="clock-date">Carregando data...</div>
       
-      <!-- Widget de Clima -->
       <div class="weather-widget" id="weatherWidget" title="Ver previsão para 7 dias">
         <i class="fas fa-spinner fa-spin" id="currentWeatherIcon"></i>
         <span id="currentTemp">--°C</span>
       </div>
     </div>
 
-    <!-- Widget Hoje (Eventos) -->
     <div class="today-container glass-effect">
       <div class="today-title">
         <button id="prevDayBtn" class="nav-btn" title="Anterior" disabled><i class="fas fa-chevron-left"></i></button>
@@ -447,22 +575,26 @@
     </div>
   </div>
 
-  <!-- Botões Verticais -->
-  <div class="sidebar glass-effect quick-links">
-      <a href="https://www.youtube.com"><i class="fab fa-youtube"></i>Youtube</a>
-      <a href="https://www.twitch.tv"><i class="fab fa-twitch"></i>Twitch</a>
-      <a href="https://www.kick.com/"><i class="fa-brands fa-kickstarter"></i>Kick</a>
-      <a href="https://www.tiktok.com"><i class="fa-brands fa-tiktok"></i>TikTok</a>
-      <a href="https://www.instagram.com"><i class="fab fa-instagram"></i>Instagram</a>
-      <a href="https://twitter.com"><i class="fab fa-twitter"></i>Twitter</a>
-      <a href="https://discord.com/channels/@me"><i class="fab fa-discord"></i>Discord</a>
-      <a href="https://outlook.live.com/mail/0/"><i class="fas fa-envelope"></i>Outlook</a>
-      <a href="https://mail.google.com/mail/u/0/#inbox"><i class="fas fa-envelope"></i>Gmail</a>
-      <a href="https://gemini.google.com/app?hl=pt-BR"><i class="fas fa-comments"></i>Gemini</a>
-      <a href="https://crowdin.com/project/hytale-game/pt-BR"><i class="fas fa-globe"></i>Crowdin</a>
+  <div class="sidebar glass-effect">
+      <div class="sidebar-toggle-handle" title="Menu rápido">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+
+      <div class="quick-links">
+        <a href="https://www.youtube.com"><i class="fab fa-youtube"></i>Youtube</a>
+        <a href="https://www.twitch.tv"><i class="fab fa-twitch"></i>Twitch</a>
+        <a href="https://www.kick.com/"><i class="fa-brands fa-kickstarter"></i>Kick</a>
+        <a href="https://www.tiktok.com"><i class="fa-brands fa-tiktok"></i>TikTok</a>
+        <a href="https://www.instagram.com"><i class="fab fa-instagram"></i>Instagram</a>
+        <a href="https://twitter.com"><i class="fab fa-twitter"></i>Twitter</a>
+        <a href="https://discord.com/channels/@me"><i class="fab fa-discord"></i>Discord</a>
+        <a href="https://outlook.live.com/mail/0/"><i class="fas fa-envelope"></i>Outlook</a>
+        <a href="https://mail.google.com/mail/u/0/#inbox"><i class="fas fa-envelope"></i>Gmail</a>
+        <a href="https://gemini.google.com/app?hl=pt-BR"><i class="fas fa-comments"></i>Gemini</a>
+        <a href="https://crowdin.com/project/hytale-game/pt-BR"><i class="fas fa-globe"></i>Crowdin</a>
+      </div>
   </div>
 
-  <!-- Barra de Pesquisa -->
   <div class="search-container">
     <form class="search-box glass-effect" id="searchForm" autocomplete="off">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
@@ -473,13 +605,11 @@
     </form>
   </div>
 
-  <!-- Modal de Previsão -->
   <div class="modal-overlay" id="weatherModalOverlay">
     <div class="weather-modal glass-effect">
       <button class="close-modal" id="closeModalBtn"><i class="fas fa-times"></i></button>
       <h2 class="modal-title">Previsão para 7 Dias</h2>
       <div class="forecast-container" id="forecastContainer">
-        <!-- Itens injetados via JS -->
       </div>
       
       <h3 style="margin-bottom: 10px; font-weight: 500; font-size: 1.1rem; text-align:center;">Radar de Chuva</h3>
@@ -490,7 +620,6 @@
   </div>
 
   <script>
-    /* --- RELÓGIO COM SEGUNDOS (PERSISTENTE) --- */
     const clockTimeElement = document.getElementById('clock-time');
     let showSeconds = localStorage.getItem('showSeconds') === 'true';
 
@@ -521,7 +650,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    /* --- CLIMA & PREVISÃO --- */
     const weatherWidget = document.getElementById('weatherWidget');
     const currentWeatherIcon = document.getElementById('currentWeatherIcon');
     const currentTemp = document.getElementById('currentTemp');
@@ -617,7 +745,6 @@
       if (e.target === modalOverlay) modalOverlay.classList.remove('active');
     });
 
-    /* --- EVENTOS DE HOJE, ONTEM E PRÓXIMOS --- */
     let eventViews = [];
     let currentViewIndex = 0;
 
@@ -684,7 +811,6 @@
         const data = await response.json();
         eventViews = [];
 
-        // Ontem
         if (data.ontem) {
           eventViews.push({
             id: 'ontem',
@@ -694,7 +820,6 @@
           });
         }
 
-        // Hoje
         if (data.hoje) {
           eventViews.push({
             id: 'hoje',
@@ -704,7 +829,6 @@
           });
         }
 
-        // Próximos dias agrupados por data
         if (data.proximos && Array.isArray(data.proximos)) {
           const groups = {};
           data.proximos.forEach(item => {
@@ -714,7 +838,6 @@
             groups[item.dia].push({ nome: item.nome, url: item.url });
           });
 
-          // Ordena os dias numericamente
           const sortedDays = Object.keys(groups).map(Number).sort((a, b) => a - b);
           sortedDays.forEach(day => {
             eventViews.push({
@@ -726,7 +849,6 @@
           });
         }
 
-        // Inicia visualização padrão no "Hoje"
         const todayIdx = eventViews.findIndex(v => v.id === 'hoje');
         currentViewIndex = todayIdx !== -1 ? todayIdx : 0;
 
@@ -740,7 +862,39 @@
 
     fetchTodayEvents();
 
-    /* --- BUSCA --- */
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggleHandle = document.querySelector('.sidebar-toggle-handle');
+
+    function openSidebar() {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    if (toggleHandle) {
+      toggleHandle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (sidebar.classList.contains('active')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+    }
+
+    overlay.addEventListener('click', closeSidebar);
+
+    sidebar.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && !sidebar.classList.contains('active')) {
+        openSidebar();
+      }
+    });
+
     const engineToggle = document.getElementById('engineToggle')
     const engineWrapper = document.getElementById('engineWrapper')
     const searchForm = document.getElementById('searchForm')
