@@ -134,6 +134,13 @@
       justify-content: center;
       gap: 8px;
       flex-grow: 1;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .today-title-content:hover {
+      opacity: 0.8;
+      transform: scale(1.02);
     }
 
     .nav-btn {
@@ -290,6 +297,52 @@
     .f-icon { font-size: 1.5rem; margin: 5px 0; }
     .f-max { color: #ffcccb; font-weight: 600; font-size: 0.9rem; }
     .f-min { color: #add8e6; font-size: 0.85rem; opacity: 0.8; }
+
+    .events-modal {
+      width: 500px;
+      max-width: 90%;
+      padding: 30px;
+      border-radius: 20px;
+      color: white;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      height: auto;
+      overflow: visible;
+    }
+
+    .modal-overlay.active .events-modal { transform: translateY(0); }
+
+    .modal-events-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-events-list li {
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      line-height: 1.4;
+      transition: background 0.3s;
+      overflow: hidden;
+    }
+
+    .modal-events-list li:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .modal-events-list li a, .modal-events-list li .no-link {
+      display: block;
+      padding: 12px 16px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .modal-events-list li a:hover {
+      text-decoration: underline;
+    }
 
     .sidebar {
       animation: fadeIn 1s ease;
@@ -564,7 +617,7 @@
     <div class="today-container glass-effect">
       <div class="today-title">
         <button id="prevDayBtn" class="nav-btn" title="Anterior" disabled><i class="fas fa-chevron-left"></i></button>
-        <span id="todayTitleText" class="today-title-content">
+        <span id="todayTitleText" class="today-title-content" title="Clique para abrir em tela cheia">
           <i class="fas fa-calendar-day"></i> Hoje
         </span>
         <button id="nextDayBtn" class="nav-btn" title="Próximo" disabled><i class="fas fa-chevron-right"></i></button>
@@ -616,6 +669,15 @@
       <div style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         <iframe src="https://www.rainviewer.com/map.html?loc=-22.7388,-43.4921,8.788702495454777&oCS=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1&ts=2" width="100%" frameborder="0" style="border:0;height:50vh;" allowfullscreen></iframe>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="eventsModalOverlay">
+    <div class="events-modal glass-effect">
+      <button class="close-modal" id="closeEventsModalBtn"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title" id="eventsModalTitle">Eventos</h2>
+      <ul class="modal-events-list" id="eventsModalList">
+      </ul>
     </div>
   </div>
 
@@ -750,6 +812,11 @@
 
     const prevDayBtn = document.getElementById('prevDayBtn');
     const nextDayBtn = document.getElementById('nextDayBtn');
+    const todayTitleText = document.getElementById('todayTitleText');
+    const eventsModalOverlay = document.getElementById('eventsModalOverlay');
+    const closeEventsModalBtn = document.getElementById('closeEventsModalBtn');
+    const eventsModalTitle = document.getElementById('eventsModalTitle');
+    const eventsModalList = document.getElementById('eventsModalList');
 
     prevDayBtn.addEventListener('click', () => {
       if (currentViewIndex > 0) {
@@ -765,12 +832,52 @@
       }
     });
 
+    todayTitleText.addEventListener('click', () => {
+      const view = eventViews[currentViewIndex];
+      if (!view) return;
+
+      eventsModalTitle.innerHTML = `<i class="fas ${view.icon}"></i> ${view.label}`;
+      eventsModalList.innerHTML = '';
+
+      if (!view.events || view.events.length === 0) {
+        eventsModalList.innerHTML = '<li style="text-align: center; opacity: 0.7;"><span class="no-link">Nenhum evento neste dia.</span></li>';
+      } else {
+        view.events.forEach(event => {
+          const li = document.createElement('li');
+          if (event.url) {
+            const a = document.createElement('a');
+            a.href = event.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = event.nome;
+            li.appendChild(a);
+          } else {
+            const span = document.createElement('span');
+            span.className = 'no-link';
+            span.textContent = event.nome;
+            li.appendChild(span);
+          }
+          eventsModalList.appendChild(li);
+        });
+      }
+      eventsModalOverlay.classList.add('active');
+    });
+
+    closeEventsModalBtn.addEventListener('click', () => {
+      eventsModalOverlay.classList.remove('active');
+    });
+
+    eventsModalOverlay.addEventListener('click', (e) => {
+      if (e.target === eventsModalOverlay) {
+        eventsModalOverlay.classList.remove('active');
+      }
+    });
+
     function renderEventView() {
       const view = eventViews[currentViewIndex];
       if (!view) return;
 
-      const titleTextEl = document.getElementById('todayTitleText');
-      titleTextEl.innerHTML = `<i class="fas ${view.icon}"></i> ${view.label}`;
+      todayTitleText.innerHTML = `<i class="fas ${view.icon}"></i> ${view.label}`;
 
       prevDayBtn.disabled = currentViewIndex === 0;
       nextDayBtn.disabled = currentViewIndex === eventViews.length - 1;
